@@ -13,17 +13,18 @@
 3. npm start
 ```
 
+***
 
 #### 게임이 진행되는 채팅창
 
 <img src="./img/01.png" width="70%"></img>
 
-
+***
 
 #### 로비
 
 <img src="./img/02.png" width="70%"></img>
 
-
+***
 
 제작 : 2015.4 ~ 
