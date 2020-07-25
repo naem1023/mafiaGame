@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+    <title>그많데가 약 빨고 만든 마피아 게임</title>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	
+	<link href="select-box/dist/css/bootstrap-select.css" rel="stylesheet" >
+	<script src="select-box/dist/js/bootstrap-select.js"></script>
+	
+	
+	<style>
+		@import url(http://fonts.googleapis.com/earlyaccess/naunmgothic.css);
+		
+		body {
+			font-family: "Helvetica Neue", Helvetica, Arial, 'Nanum Gothic',  sans-serif;
+            background: #292929;
+        }
+        
+        form {
+            background: #70CCBD;
+            border-radius: 10px;
+            padding: 40px;
+            width: 400px;
+            margin-top: 10%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        blockquote {
+            width: 400px;
+            margin-top: 40px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+	</style>
+</head>
+
+<body>
+	<div class="container"> 
+
+            <form role="form">
+                <h1 class="text-center">Mafia Online</h1>
+                <div class="form-group">
+                    <label for="id">ID</label>
+                    <input type="text" class="form-control" id="userId"/>    
+                </div>
+                <div class="form-group">
+                    <label for="pwd">PWD</label>
+                    <input type="text" class="form-control" id="userPwd"/>
+                </div>
+                <input type="button" class="btn btn-success" value="Log In"/>
+            </form>
+            
+        <blockquote>        
+            <p style="color: #FFFFFF;">꾸륵꾸륵</p>
+            <footer>강병관, <cite title="Source Title">기숙사에서 고향 별을 그리워하며</cite></footer>
+        </blockquote>
+
+	</div>
+    
+	<script type="text/javascript">
+		function goReplace(str) {
+			location.replace(str);
+		}
+	</script>
+</body>
+</html>

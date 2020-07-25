@@ -1,0 +1,380 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+    <title>그많데가 약 빨고 만든 마피아 게임</title>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	
+	<link href="select-box/dist/css/bootstrap-select.css" rel="stylesheet" >
+	<script src="select-box/dist/js/bootstrap-select.js"></script>
+	
+	
+	<style>
+		@import url(http://fonts.googleapis.com/earlyaccess/naunmgothic.css);
+		
+		body {
+			font-family: "Helvetica Neue", Helvetica, Arial, 'Nanum Gothic',  sans-serif;
+		}
+
+		table {
+			border-collapse: separate;
+			border-spacing: 10px 5px;
+		}
+	</style>
+</head>
+
+<body>
+	<!--
+	<nav class="navbar navbar-default">
+		<ul class="nav nav-tabs nav-justified">
+			<li class="active"><a href="#">메뉴1</a></li>
+			<li><a href="#">메뉴2</a></li>
+		</ul>
+	</nav>
+	-->
+	
+	<div class="container-fluid">
+		<div class="col-md-12" style="border-radius: 10px; padding: 5px;">
+			<h1>방 1(admin님의 방)</h1>
+		</div>
+	
+		<div class="row">
+			<div class="col-md-2">
+				<input type="button" class="btn btn-info" id="goLobby" value="로비"/>
+			</div>
+			
+			<div class="col-md-6">
+				<form role="form" class="form-inline">
+					<label for="name">이름</label>
+					<div class="form-group">
+						<input type="text" class="form-control" id="nickname"/> 
+						<input type="button" class="btn btn-default" id="changeNameBtn" value="이름 바꾸기"/>
+					</div>
+				</form>
+			</div>
+			
+			
+			<div class="col-md-2 col-md-offset-2">
+				<input type="button" class="btn btn-default" id="startGameBtn" value="게임 시작"/>
+			</div>
+		</div>
+		
+		<div class="row" style="padding-bottom:10px;">
+			<div class="col-md-2">    
+				<div class="panel panel-info">
+					<div class="panel-heading">
+						<h3 class="panel-title">입장한 사람</h3>
+					</div>
+					
+					<table id="userInfo">
+						<thead>
+							<tr>
+								<th>직업</th>
+								<th>이름</th>
+							</tr>
+						</thead>      
+					</table>
+				</div>
+			</div>
+			
+			<div class="col-md-8" id="div_table" style="border-radius:10px; background-color:#303030; height:400px; overflow:auto;">
+				<table id="msgs" style="font-size:12pt; color:#ffffff;"></table>
+			</div>
+			
+			<div class="col-md-2">    
+				<div class="panel panel-info">
+					<div class="panel-heading">
+						<h3 class="panel-title">뉴스</h3>
+					</div>
+					<ul class="list-group">
+						<li class="list-group-item">너구리가 출현했다!!</li>
+						<li class="list-group-item">마피아는 너구리다!</li>
+						<li class="list-group-item">너구리는 배가 고프다!</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row">
+			<label for="basic" class="col-lg-1 col-lg-offset-2 control-label">메시지</label>
+
+			<div class="col-lg-2">
+				<select id="userList" class="selectpicker show-tick form-control" data-live-search="true">
+					<option value="ALL" data-subtext="모두에게">ALL</option>
+				</select>
+			</div>
+				
+			<div class="col-lg-4">
+				<input type="text" class="form-control" id="msgbox"/>
+			</div>
+			<div class="col-lg-2">
+				<button class="btn btn-primary" data-toggle="modal" data-target="#voteModal">
+					투표창 보기
+				</button>
+			</div>
+		</div>
+		
+		<!-- Modal -->
+		<div class="modal fade" id="voteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<h4 class="modal-title" id="voteQst"></h4>
+			  </div>
+			  <div id="voteBox" class="modal-body">
+			  
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+				<div id="voteBtn"></div>
+			  </div>
+			</div> <!-- 모달 콘텐츠 -->
+		  </div> <!-- 모달 다이얼로그 -->
+		</div> <!-- 모달 전체 윈도우 -->
+		
+		<script type="text/javascript">
+			var socket = io.connect();
+			var myNickname;
+			
+			var myStatus = 0;
+			
+			var startTime;
+			
+			var chatOn = true;
+			var chatCount = 0;
+		
+			var end = false;
+			
+			var status = { 1 : '시민', 2 : '마피아', 3 : '경찰', 4 : '의사'};
+			
+			<!--게임 시작-->
+			$('#startGameBtn').click(function(){
+				socket.emit('ready', {from : myNickname});
+			});
+			
+			<!--닉네임 변경-->
+			$('#changeNameBtn').click(function(){
+				if(document.getElementById("nickname").value.length <= 10){
+					socket.emit('changeName', {nickname : $('#nickname').val()});
+					myNickname = $('#nickname').val();
+				}
+				else
+					alert('닉네임은 10글자 이하의 문자열만이 등록 가능합니다.');
+			});
+			
+			<!--메시지 전송-->
+			$('#msgbox').keyup(function(event){
+				if(event.which == 13){
+					if(chatOn == true){
+						if(startTime != undefined && ( (new Date()).getTime() - startTime) <= 1000){
+							chatCount++;
+							
+							if(chatCount >= 10){
+								chatCount = 0;
+								
+								var area = document.getElementById("div_table");
+								$('#msgs').append('<tr><td valign="top" style="padding:1px; color:#F46690;"> [System]  :  </td><td style="padding:1px; color:#F46690;">' + '채팅 작작해라' + '\n' + '</td></tr>');
+								area.scrollTop = area.scrollHeight;
+								
+								chatOn = false;
+								setTimeout(function(){ chatOn = true; },10000);
+							}
+						}
+						
+						startTime = new Date().getTime();
+						
+						var text = $('#msgbox').val();
+						
+						if( text.substring(0, 3) == '/투표' || text.substring(0, 3) == '/ㅌㅍ'){
+							socket.emit('startVote', {from : myNickname});
+							$('#msgbox').val('');
+						}
+						else if( text.substring(0, 4) == '/도움말' || text.substring(0, 1) == '/h' || text.substring(0, 5) == '/help'){
+							socket.emit('help', myNickname);
+							$('#msgbox').val('');
+						}
+						else {		
+							socket.emit('send_msg', {toSend : $('#userList').val(), from : myNickname, msg : text});   
+							$('#msgbox').val('');
+						}
+					}
+					else {
+						var area = document.getElementById("div_table");
+						$('#msgs').append('<tr><td valign="top" style="padding:1px; color:#F46690;"> [System]  :  </td><td style="padding:1px; color:#F46690;">' + '너는 채팅 못함' + '\n' + '</td></tr>');
+						area.scrollTop = area.scrollHeight;
+					}
+				}
+			});
+			
+			
+			function submit(kVote){
+				var voting = document.getElementsByName('vote');
+				var selected;
+				
+				for(var i=0; i<voting.length; i++)
+					if (voting[i].checked == true)
+						selected = voting[i].value;
+				
+				if(selected == undefined)
+				   return;
+				
+				$('#voteBox').empty();
+				$('#voteBtn').empty();
+				
+				if (kVote == 1) {
+					socket.emit('treatMVote', selected);
+                    $("#voteModal").modal('close');
+				}
+				else if (kVote == 2) {
+					console.log('status ' + myStatus);
+					switch(myStatus){
+						case 1:
+							console.log('citizenVote');
+							socket.emit('citizenResult', selected);
+                            $("#voteModal").modal('close');
+							break;
+						case 2:
+							console.log('mafiaVote');
+							socket.emit('mafiaResult', selected);
+                            $("#voteModal").modal('close');
+							break;
+						case 3:
+							console.log('policeVote');
+							socket.emit('policeResult', {selected : selected, nick : myNickname});
+                            $("#voteModal").modal('close');
+							break;
+						case 4:
+							console.log('doctorVote');
+							socket.emit('doctorResult', selected);
+                            $("#voteModal").modal('close');
+							break;
+					}
+				}
+			}
+			
+			socket.on('end', function(){
+				end = true;
+			});
+			
+			socket.on('hide', function(){
+				$('#changeNameBtn').hide();
+			});
+			
+			<!--닉네임 입력 창 갱신-->
+			socket.on('newUserCon', function(data){
+				//console.log('newUserCon : ' + data.nickname);
+				$('#nickname').val(data.nickname);
+				myNickname = data.nickname;
+			});
+			
+			<!--닉네임 목록 갱신-->
+			socket.on('refreshList', function(data){
+				$('#userList').empty().append('<option value="ALL" data-subtext="모두에게">ALL</option>');
+				
+				for(var i=0; i<data.length; i++)
+					$('#userList').append('<option value=' + data[i] + '>' + data[i] + "</option>").selectpicker('refresh');
+					
+				//인원 정보 갱신
+				$('#userInfo').empty().append('<thead><tr><th>직업</th><th>이름</th></tr></thead>');
+				
+				var _status;
+				
+				for(var i=0; i<data.length; i++){
+					if(end == true)
+						$('#userInfo').append('<tr><td>' + status[data.status[i]] + '</td><td>' + data.user[i] + "</td></tr>");
+					else
+						$('#userInfo').append('<tr><td>?</td><td>' + data[i] + "</td></tr>");
+				}
+			});
+	
+			<!--신분 표시-->
+			socket.on('def_status', function(data){
+				var area = document.getElementById("div_table");
+				$('#msgs').append('<tr><td valign="top"> [System]  :  </td><td style="padding:1px; color:#FF4A68;">' + data.msg + '\n' + '</td></tr>');
+				area.scrollTop = area.scrollHeight;
+	
+				myStatus = data.t_status;
+			});
+	
+			<!--받은 메시지 표시-->
+	
+			socket.on('sys_msg', function(data){
+				var area = document.getElementById("div_table");
+				$('#msgs').append('<tr><td valign="top" style="color:#' + data.color + ';"> [System]  :  </td><td style="padding:1px; color:#' + data.color + '">' + data.msg + '\n' + '</td></tr>');
+				area.scrollTop = area.scrollHeight;
+			});
+	
+			socket.on('get_msg', function(data){
+				var area = document.getElementById("div_table");
+				$('#msgs').append('<tr><td valign="top" style="color:#1975D1;"> [귓속말] ' + data.from + '  :  </td><td>' + data.msg + '\n' + '</td></tr>');
+				area.scrollTop = area.scrollHeight;
+			});
+	
+			socket.on('get_msg_all', function(data){
+				var area = document.getElementById("div_table");
+				$('#msgs').append('<tr><td valign="top"> [모두] ' + data.from + '  :  </td><td>' + data.msg + '\n' + '</td></tr>');
+				area.scrollTop = area.scrollHeight;
+			});
+	
+			
+			<!--메인 투표-->
+			socket.on('mainVote', function(data){
+				$("#voteModal").modal('show');
+				$('#voteQst').append('낮의 투표로 죽일 사람은?');
+				for(var i=0; i<data.list.length; i++)
+					$('#voteBox').append('<input type="radio" name="vote" value="' + data.list[i] + '"/>' + data.list[i] + '<br>');
+				$('#voteBtn').append('<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submit(1)">선택</button></div>');
+			});
+			
+			<!--직업 별 투표-->
+	
+			socket.on('citizenVote', function(data){
+				$("#voteModal").modal('show');
+				$('#voteBox').append('대건고에서 가장 나이가 많은 사람은? <br>');
+				for(var i=0; i<data.list.length; i++)
+					$('#voteBox').append('<input type="radio" name="vote" value="' + data.list[i] + '"/>' + data.list[i] + '<br>');
+				$('#voteBtn').append('<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submit(2)">선택</button></div>');
+			});
+	
+			socket.on('mafiaVote', function(data){
+				$("#voteModal").modal('show');
+				$('#voteBox').append('마피아는 죽일 사람을 선택하세요. <br>');
+				for(var i=0; i<data.list.length; i++){
+					if(data.list[i] != myNickname)
+						$('#voteBox').append('<input type="radio" name="vote" value="' + data.list[i] + '"/>' + data.list[i] + '<br>');
+				}
+				$('#voteBtn').append('<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submit(2)">선택</button></div>');
+			});
+	
+			socket.on('policeVote', function(data){
+				$("#voteModal").modal('show');
+				$('#voteBox').append('경찰은 직업을 알고싶은 사람을 선택하세요. <br>');
+				for(var i=0; i<data.list.length; i++){
+					if(data.list[i] != myNickname)
+						$('#voteBox').append('<input type="radio" name="vote" value="' + data.list[i] + '"/>' + data.list[i] + '<br>');
+				}
+				$('#voteBtn').append('<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submit(2)">선택</button></div>');
+			});
+	
+			socket.on('doctorVote', function(data){
+				$("#voteModal").modal('show');
+				$('#voteBox').append('의사는 살리고 싶은 사람을 선택하세요. <br>');
+				for(var i=0; i<data.list.length; i++){
+					if(data.list[i] != myNickname)
+					$('#voteBox').append('<input type="radio" name="vote" value="' + data.list[i] + '"/>' + data.list[i] + '<br>');
+				}
+				$('#voteBtn').append('<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submit(2)">선택</button></div>');
+			});
+		</script>
+	</div>
+	
+	
+</body>
+</html>

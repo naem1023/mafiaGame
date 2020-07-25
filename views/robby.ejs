@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+    <title>그많데가 약 빨고 만든 마피아 게임</title>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	
+	<link href="select-box/dist/css/bootstrap-select.css" rel="stylesheet" >
+	<script src="select-box/dist/js/bootstrap-select.js"></script>
+	
+	
+	<style>
+		@import url(http://fonts.googleapis.com/earlyaccess/naunmgothic.css);
+		
+		body {
+			font-family: "Helvetica Neue", Helvetica, Arial, 'Nanum Gothic',  sans-serif;
+            padding-top: 70px;
+            background: #292929;
+		}
+	</style>
+</head>
+
+<body>
+    <div class="container">
+        
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="container">  
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">GMD </a>
+            </div>
+         
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="/robby">대기실</a></li>
+                    <li><a href="#">랭킹</a></li>
+                    <li><a href="/madeby">제작자</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">드롭다운 <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">서브메뉴 1</a></li>
+                            <li><a href="#">서브메뉴 2</a></li>
+                            <li><a href="#">서브메뉴 3</a></li>
+                        </ul>
+                    </li> 
+            </ul>
+                
+            <form class="navbar-form navbar-right" role="search">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="검색">
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+    
+          </div><!-- /.navbar-collapse -->
+      </div>
+      
+    </nav>
+    
+    <div class="row">
+        <div class="col-sm-6 col-md-3">
+            <div class="thumbnail" style="color: #392929;">
+                <img src="DSC_6305.jpg" alt="...">
+                <div class="caption">
+                    <h3>테스트 방</h3>
+                    <p>아무나 들어와라</p>
+                    <p><a href="/ingame" class="btn btn-default" role="button">입장</a></p>
+                </div>
+            </div>
+        </div> 
+        <div class="col-sm-6 col-md-3">
+            <div class="thumbnail">
+                <img src="DSC_0374.jpg" alt="...">
+                <div class="caption">
+                    <h3>제목과 </h3>
+                    <p>내용도 넣을 수 있다.</p>
+                    <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="thumbnail">
+                <img src="DSC_5041.jpg" alt="...">
+                <div class="caption">
+                    <h3>제목과 </h3>
+                    <p>내용도 넣을 수 있다.</p>
+                    <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="thumbnail">
+                <img src="DSC_4999.jpg" alt="...">
+                <div class="caption">
+                    <h3>제목과 </h3>
+                    <p>내용도 넣을 수 있다.</p>
+                    <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <span class="label label-default">Default</span>
+    <span class="label label-primary">Primary</span>
+    <span class="label label-success">Success</span>
+    <span class="label label-info">Info</span>
+    <span class="label label-warning">Warning</span>
+    <span class="label label-danger">Danger</span>
+
+    </div>
+</body>
+</html>
